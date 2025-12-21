@@ -1,8 +1,17 @@
-.venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
 
+# Packaging/build artifacts
 build/
 dist/
 *.egg-info/
+*.egg
+MANIFEST
+
+# Virtual env
+.venv/
+
+# Local config
 .local-agent/
