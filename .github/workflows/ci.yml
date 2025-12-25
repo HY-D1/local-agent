@@ -40,9 +40,14 @@ jobs:
       - name: Twine check (metadata sanity)
         run: twine check dist/*
 
-      - name: Install wheel and smoke test CLI (no Ollama required)
+      - name: Install wheel and smoke test CLI (fresh venv)
+        shell: bash
         run: |
-          python -m pip install --force-reinstall dist/*.whl
+          python -m venv /tmp/wheeltest
+          source /tmp/wheeltest/bin/activate
+          python -m pip install -U pip
+          python -m pip install dist/*.whl
           python -c "import local_agent; print(local_agent.__version__)"
           local-agent --help
           local-agent commands
+
