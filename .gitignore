@@ -1,17 +1,15 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
+.pytest_cache/
 
-# Packaging/build artifacts
-build/
+# Packaging
 dist/
+build/
 *.egg-info/
 *.egg
 MANIFEST
 
-# Virtual env
+# Envs / local config
 .venv/
-
-# Local config
 .local-agent/
