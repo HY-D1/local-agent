@@ -1,4 +1,4 @@
-# local-agent (v0.1.0)
+# local-agent (v0.1.1)
 
 A small terminal coding assistant that runs locally using **Ollama**.  
 It can:
@@ -6,6 +6,15 @@ It can:
 - answer repo-aware questions (`ask`)
 - run an interactive chat (`chat`)
 - edit a single file safely (`edit`)
+
+## New in v0.1.1
+
+- `local-agent doctor` — check Ollama + tooling
+- `local-agent commands` — list custom slash commands
+- `ask` supports piped stdin: `cat logs.txt | local-agent ask "explain"`
+- `chat` supports slash commands: `/help /status /model /config /exit`
+- Custom commands via `.local-agent/commands/*.md` and `~/.local-agent/commands/*.md` with `$ARGUMENTS`
+- `edit --apply` prompts for confirmation unless `--yes`
 
 ---
 
