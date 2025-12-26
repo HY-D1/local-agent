@@ -1,10 +1,12 @@
-.PHONY: help test build twine-check smoke clean
+.PHONY: help test lint format build twine-check smoke clean
 
 PY ?= python3
 
 help:
 	@echo "Targets:"
 	@echo "  make test        - run unit tests"
+	@echo "  make lint        - run ruff lint checks"
+	@echo "  make format      - run ruff formatter"
 	@echo "  make build       - build sdist + wheel"
 	@echo "  make twine-check - sanity check dist metadata"
 	@echo "  make smoke       - install wheel in fresh venv + run import/CLI"
@@ -14,12 +16,24 @@ test:
 	$(PY) -m pip install -U pytest
 	$(PY) -m pytest -q
 
+lint:
+	$(PY) -m pip install -U ruff
+	$(PY) -m ruff check .
+
+lint-fix:
+	$(PY) -m pip install -U ruff
+	$(PY) -m ruff check . --fix
+
+format:
+	$(PY) -m pip install -U ruff
+	$(PY) -m ruff format .
+
 build:
 	$(PY) -m pip install -U build
 	$(PY) -m build
 
 twine-check:
-	$(PY) -m pip install -U "twine>=6.1.0" "packaging>=24.2"
+	$(PY) -m pip install -U twine "pkginfo>=1.12.0"
 	$(PY) -m twine check dist/*
 
 smoke: build
