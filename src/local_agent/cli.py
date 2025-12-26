@@ -23,6 +23,20 @@ import subprocess
 app = typer.Typer(add_completion=False, help="local-agent: local terminal coding assistant (via Ollama).")
 console = Console()
 
+@app.callback(invoke_without_command=True)
+def _main(
+    ctx: typer.Context,
+    version: bool = typer.Option(False, "--version", help="Show version and exit."),
+):
+    if version:
+        from . import __version__
+        console.print(__version__)
+        raise typer.Exit(0)
+
+    # If user runs just `local-agent`, show help instead of "Missing command"
+    if ctx.invoked_subcommand is None:
+        console.print(ctx.get_help())
+        raise typer.Exit(0)
 
 def _read_stdin_if_piped(max_chars: int = 80_000) -> str:
     if sys.stdin is None or sys.stdin.isatty():
