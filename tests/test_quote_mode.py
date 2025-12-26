@@ -1,4 +1,3 @@
-from pathlib import Path
 from typer.testing import CliRunner
 
 import local_agent.cli as cli

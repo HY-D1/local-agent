@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple
 
-from .utils import find_repo_root, iter_files, is_probably_code_file, read_text_limited
+from .utils import find_repo_root, iter_files, read_text_limited
 
 import re
 
