@@ -49,3 +49,7 @@ smoke: build
 clean:
 	rm -rf build dist *.egg-info src/*.egg-info .pytest_cache
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} \;
+
+install-dev:
+	$(PY) -m pip install -U pip
+	$(PY) -m pip install -e ".[dev]"
