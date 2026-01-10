@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
 
 jobs:
@@ -22,7 +22,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
 
       - name: Upgrade pip
         run: python -m pip install -U pip
@@ -30,19 +32,18 @@ jobs:
       - name: Install local-agent (editable)
         run: python -m pip install -e .
 
-      - name: Lint (Makefile)
+      - name: Lint
         run: make lint PY=python
 
-      - name: Run tests (Makefile)
+      - name: Test
         run: make test PY=python
 
-      - name: Build (Makefile)
+      - name: Build
         run: make build PY=python
 
-      - name: Twine check (Makefile)
+      - name: Twine check
         run: make twine-check PY=python
 
-      - name: Smoke test wheel (Makefile)
+      - name: Smoke test wheel
         shell: bash
         run: make smoke PY=python
-
