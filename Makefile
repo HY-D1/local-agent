@@ -1,7 +1,7 @@
 .PHONY: help dev lint lint-fix test build twine-check smoke all clean
 
 SHELL := /bin/bash
-PY ?= python3
+PY ?= python
 WHEELTEST_DIR ?= /tmp/la-wheeltest
 
 help:
@@ -38,12 +38,11 @@ twine-check:
 smoke: build
 	rm -rf $(WHEELTEST_DIR)
 	$(PY) -m venv $(WHEELTEST_DIR)
-	. $(WHEELTEST_DIR)/bin/activate && \
-		python -m pip install -U pip && \
-		python -m pip install dist/*.whl && \
-		python -c "import local_agent; print(local_agent.__version__)" && \
-		local-agent --help >/dev/null && \
-		local-agent commands
+	$(WHEELTEST_DIR)/bin/python -m pip install -U pip
+	$(WHEELTEST_DIR)/bin/python -m pip install dist/*.whl
+	$(WHEELTEST_DIR)/bin/python -c "import local_agent; print(local_agent.__version__)"
+	$(WHEELTEST_DIR)/bin/local-agent --help >/dev/null
+	$(WHEELTEST_DIR)/bin/local-agent commands
 
 all: clean lint test build twine-check smoke
 

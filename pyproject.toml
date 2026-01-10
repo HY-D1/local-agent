@@ -6,11 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "local-agent"
 version = "0.1.1"
 description = "Local terminal AI coding assistant (via Ollama)"
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Harry Dai" }]
+
 dependencies = [
   "typer>=0.12.3",
   "rich>=13.7.1",
@@ -18,22 +19,28 @@ dependencies = [
   "tomli>=2.0.1; python_version < '3.11'",
 ]
 
+keywords = ["ollama", "cli", "terminal", "assistant", "developer-tools", "llm"]
+
 classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Topic :: Utilities",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent",
 ]
 
 [project.urls]
-Source = "https://github.com/HY-D1/local-agent"
+Homepage = "https://github.com/HY-D1/local-agent"
+Repository = "https://github.com/HY-D1/local-agent"
+Issues = "https://github.com/HY-D1/local-agent/issues"
 
 [project.scripts]
 local-agent = "local_agent.cli:app"
-
-[tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [project.optional-dependencies]
 dev = [
@@ -43,3 +50,9 @@ dev = [
   "twine>=6",
   "pkginfo>=1.12.0",
 ]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
