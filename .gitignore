@@ -13,3 +13,6 @@ MANIFEST
 # Envs / local config
 .venv/
 .local-agent/
+
+# macOS
+.DS_Store
