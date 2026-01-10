@@ -1,9 +1,8 @@
-.PHONY: help dev tools lint lint-fix test build twine-check smoke all clean
+.PHONY: help dev lint lint-fix test build twine-check smoke all clean
 
 SHELL := /bin/bash
 PY ?= python3
 WHEELTEST_DIR ?= /tmp/la-wheeltest
-DEV_TOOLS := ruff pytest build twine "pkginfo>=1.12.0"
 
 help:
 	@echo "Targets:"
@@ -19,24 +18,21 @@ help:
 
 dev:
 	$(PY) -m pip install -U pip
-	$(MAKE) tools
+	$(PY) -m pip install -e ".[dev]"
 
-tools:
-	$(PY) -m pip install -U $(DEV_TOOLS)
-
-lint: tools
+lint:
 	$(PY) -m ruff check .
 
-lint-fix: tools
+lint-fix:
 	$(PY) -m ruff check . --fix
 
-test: tools
+test:
 	$(PY) -m pytest -q
 
-build: tools
+build:
 	$(PY) -m build
 
-twine-check: tools
+twine-check:
 	$(PY) -m twine check dist/*
 
 smoke: build

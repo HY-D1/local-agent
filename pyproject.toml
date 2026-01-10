@@ -18,6 +18,15 @@ dependencies = [
   "tomli>=2.0.1; python_version < '3.11'",
 ]
 
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.urls]
+Source = "https://github.com/HY-D1/local-agent"
+
 [project.scripts]
 local-agent = "local_agent.cli:app"
 
@@ -28,4 +37,10 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "build", "twine", "pkginfo>=1.12.0"]
+dev = [
+  "ruff>=0.4",
+  "pytest>=8",
+  "build>=1",
+  "twine>=6",
+  "pkginfo>=1.12.0",
+]
