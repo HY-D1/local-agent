@@ -1,55 +1,56 @@
-.PHONY: help test lint format build twine-check smoke clean
+.PHONY: help dev tools lint lint-fix test build twine-check smoke all clean
 
+SHELL := /bin/bash
 PY ?= python3
+WHEELTEST_DIR ?= /tmp/la-wheeltest
+DEV_TOOLS := ruff pytest build twine "pkginfo>=1.12.0"
 
 help:
 	@echo "Targets:"
+	@echo "  make dev         - install dev tools (ruff/pytest/build/twine/pkginfo)"
+	@echo "  make lint        - run ruff"
+	@echo "  make lint-fix    - ruff --fix"
 	@echo "  make test        - run unit tests"
-	@echo "  make lint        - run ruff lint checks"
-	@echo "  make format      - run ruff formatter"
 	@echo "  make build       - build sdist + wheel"
 	@echo "  make twine-check - sanity check dist metadata"
 	@echo "  make smoke       - install wheel in fresh venv + run import/CLI"
+	@echo "  make all         - clean + lint + test + build + twine-check + smoke"
 	@echo "  make clean       - remove build artifacts"
 
-test:
-	$(PY) -m pip install -U pytest
-	$(PY) -m pytest -q
+dev:
+	$(PY) -m pip install -U pip
+	$(MAKE) tools
 
-lint:
-	$(PY) -m pip install -U ruff
+tools:
+	$(PY) -m pip install -U $(DEV_TOOLS)
+
+lint: tools
 	$(PY) -m ruff check .
 
-lint-fix:
-	$(PY) -m pip install -U ruff
+lint-fix: tools
 	$(PY) -m ruff check . --fix
 
-format:
-	$(PY) -m pip install -U ruff
-	$(PY) -m ruff format .
+test: tools
+	$(PY) -m pytest -q
 
-build:
-	$(PY) -m pip install -U build
+build: tools
 	$(PY) -m build
 
-twine-check:
-	$(PY) -m pip install -U twine "pkginfo>=1.12.0"
+twine-check: tools
 	$(PY) -m twine check dist/*
 
 smoke: build
-	rm -rf /tmp/la-wheeltest
-	$(PY) -m venv /tmp/la-wheeltest
-	. /tmp/la-wheeltest/bin/activate && \
-	python -m pip install -U pip && \
-	python -m pip install dist/*.whl && \
-	python -c "import local_agent; print(local_agent.__version__)" && \
-	local-agent --help && \
-	local-agent commands
+	rm -rf $(WHEELTEST_DIR)
+	$(PY) -m venv $(WHEELTEST_DIR)
+	. $(WHEELTEST_DIR)/bin/activate && \
+		python -m pip install -U pip && \
+		python -m pip install dist/*.whl && \
+		python -c "import local_agent; print(local_agent.__version__)" && \
+		local-agent --help >/dev/null && \
+		local-agent commands
+
+all: clean lint test build twine-check smoke
 
 clean:
 	rm -rf build dist *.egg-info src/*.egg-info .pytest_cache
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} \;
-
-install-dev:
-	$(PY) -m pip install -U pip
-	$(PY) -m pip install -e ".[dev]"
