@@ -35,15 +35,61 @@ It can:
 
 ## Quickstart
 
+### Quick Setup (Recommended)
+
+```bash
+git clone https://github.com/HY-D1/local-agent.git
+cd local-agent
+./start.sh
+```
+
+Then use local-agent:
 ```bash
 local-agent doctor
 local-agent ask "Where is the database connection created?"
 local-agent chat
 ```
 
+### Optional: Shell Integration (Global Access)
+
+Add to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+source /path/to/local-agent/shell-integration.sh
+```
+
+Then you can use these commands from **any directory**:
+
+```bash
+local-agent-start    # Setup + activate venv
+local-agent-venv     # Just activate the venv
+la                   # Shorthand for local-agent
+```
+
+**Note:** After running `./start.sh`, you may need to activate the virtual environment manually:
+```bash
+source .venv/bin/activate
+```
+
 ## Install
 
-### Option A — Install from source (recommended)
+### Option A — Quick Setup with start.sh (recommended)
+
+```bash
+git clone https://github.com/HY-D1/local-agent.git
+cd local-agent
+./start.sh
+```
+
+The `start.sh` script will:
+- Check Python version (requires 3.10+)
+- Check Ollama installation and status
+- Create and activate a virtual environment
+- Install local-agent in editable mode
+- Create default configuration
+- Run environment diagnostics
+
+### Option B — Manual Install from Source
 
 ```bash
 git clone https://github.com/HY-D1/local-agent.git

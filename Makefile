@@ -1,4 +1,4 @@
-.PHONY: help dev lint lint-fix test build twine-check smoke all clean
+.PHONY: help start dev lint lint-fix test build twine-check smoke all clean
 
 SHELL := /bin/bash
 PY ?= python
@@ -6,6 +6,7 @@ WHEELTEST_DIR ?= /tmp/la-wheeltest
 
 help:
 	@echo "Targets:"
+	@echo "  make start       - run start.sh for quick setup"
 	@echo "  make dev         - install dev tools (ruff/pytest/build/twine/pkginfo)"
 	@echo "  make lint        - run ruff"
 	@echo "  make lint-fix    - ruff --fix"
@@ -15,6 +16,12 @@ help:
 	@echo "  make smoke       - install wheel in fresh venv + run import/CLI"
 	@echo "  make all         - clean + lint + test + build + twine-check + smoke"
 	@echo "  make clean       - remove build artifacts"
+	@echo ""
+	@echo "Shell integration:"
+	@echo "  source ./shell-integration.sh    - Add to ~/.bashrc or ~/.zshrc"
+
+start:
+	@./start.sh
 
 dev:
 	$(PY) -m pip install -U pip
