@@ -12,7 +12,7 @@ from rich.prompt import Confirm
 
 from .config import load_config
 from .context import RepoContext
-from .ollama_client import OllamaClient
+from .ollama_client import OllamaClient, OllamaError, OllamaTimeoutError, OllamaConnectionError
 from .prompts import SYSTEM_ASK, SYSTEM_EDIT
 from .safety import safe_apply
 from .commands import discover_commands, resolve_command, render_template
@@ -313,8 +313,18 @@ def ask(question: str = typer.Argument(..., help="Your coding question.")):
     rels = sorted(set(rels + _force_include_paths(repo.root, question)))
     files = [repo.read_file(r, max_chars=cfg.max_file_chars) for r in rels]
 
-    out = client.chat(build_ask_messages(tree, files, question, stdin_text=stdin_text))
-    console.print(Panel(out, title=f"Answer ({cfg.model})", expand=True))
+    try:
+        out = client.chat(build_ask_messages(tree, files, question, stdin_text=stdin_text))
+        console.print(Panel(out, title=f"Answer ({cfg.model})", expand=True))
+    except OllamaTimeoutError as e:
+        console.print(Panel(f"[yellow]Timeout:[/yellow] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
+    except OllamaConnectionError as e:
+        console.print(Panel(f"[red]Connection Error:[/red] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
+    except OllamaError as e:
+        console.print(Panel(f"[red]Ollama Error:[/red] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
 
 
 @app.command()
@@ -450,10 +460,20 @@ def chat():
         turn = build_ask_messages(tree, files, raw)[1]["content"]
         history.append({"role": "user", "content": turn})
 
-        out = client.chat(history)
-        history.append({"role": "assistant", "content": out})
-
-        console.print(Panel(out, title=f"Assistant ({model_name})", expand=True))
+        try:
+            out = client.chat(history)
+            history.append({"role": "assistant", "content": out})
+            console.print(Panel(out, title=f"Assistant ({model_name})", expand=True))
+        except OllamaTimeoutError as e:
+            console.print(Panel(f"[yellow]Timeout:[/yellow] {e}\n\nTry again with a shorter message or wait for the model to finish loading.", title="Error", border_style="red"))
+            # Remove the user message from history since we didn't get a response
+            history.pop()
+        except OllamaConnectionError as e:
+            console.print(Panel(f"[red]Connection Error:[/red] {e}", title="Error", border_style="red"))
+            raise typer.Exit(1)
+        except OllamaError as e:
+            console.print(Panel(f"[red]Ollama Error:[/red] {e}", title="Error", border_style="red"))
+            history.pop()
 
 
 @app.command()
@@ -474,7 +494,17 @@ def edit(
         raise typer.BadParameter(f"File does not exist: {rel}")
 
     current = abs_path.read_text(encoding="utf-8", errors="replace")
-    updated = client.chat(build_edit_messages(rel, current, instruction))
+    try:
+        updated = client.chat(build_edit_messages(rel, current, instruction))
+    except OllamaTimeoutError as e:
+        console.print(Panel(f"[yellow]Timeout:[/yellow] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
+    except OllamaConnectionError as e:
+        console.print(Panel(f"[red]Connection Error:[/red] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
+    except OllamaError as e:
+        console.print(Panel(f"[red]Ollama Error:[/red] {e}", title="Error", border_style="red"))
+        raise typer.Exit(1)
 
     if not apply:
         console.print(Panel(updated, title=f"Proposed file content (not applied) — {rel}", expand=True))
